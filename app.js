@@ -116,14 +116,14 @@ app.post("/create", async (req, res) => {
 app.get("/getUsers", async(req,res)=>{
   const users = mongoose.model("auths", authSchema);
 
-  users.find({},{_id:0,username:1}).then((data)=>{
+  users.find({},{_id:1,username:1}).then((data)=>{
    console.log(data);
-   let arr=[];
-   for(let i=0;i<data.length;i++){
-         arr.push(data[i].username);
-         // console.log(arr[i]);
-   }
-   res.send(JSON.stringify(arr));
+   // let arr=[];
+   // for(let i=0;i<data.length;i++){
+   //       arr.push(data[i].username);
+   //       // console.log(arr[i]);
+   // }
+   res.send(JSON.stringify(data));
   })
 })
 
