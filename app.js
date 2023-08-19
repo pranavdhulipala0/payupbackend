@@ -79,6 +79,7 @@ app.post("/create", async (req, res) => {
   var usercount = usersArray.length;
   //Create the structured data
   usersArray.push(groupAdmin);
+  usercount+=1;
   var userData = { toPay: {}, toBePaid: {} };
   for (var i = 0; i < usercount; i++) {
     var curr = usersArray[i];
