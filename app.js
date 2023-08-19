@@ -74,9 +74,11 @@ function updater(paymentData, users) {
 app.post("/create", async (req, res) => {
   var roomId = req.body.roomId;
   var roomName = req.body.roomName;
+  var groupAdmin = req.body.groupAdmin;
   var usersArray = req.body.users;
   var usercount = usersArray.length;
   //Create the structured data
+  usersArray.push(groupAdmin);
   var userData = { toPay: {}, toBePaid: {} };
   for (var i = 0; i < usercount; i++) {
     var curr = usersArray[i];
