@@ -113,19 +113,19 @@ app.post("/create", async (req, res) => {
 });
 
 //GET USERS LIST
-app.get("/getUsers", async(req,res)=>{
-   const users = mongoose.model("auths", authSchema);
+app.get("/getUsers", async (req, res) => {
+  const users = mongoose.model("auths", authSchema);
 
-   users.find({},{_id:0,username:1}).then((data)=>{
+  users.find({}, { _id: 0, username: 1 }).then((data) => {
     console.log(data);
-    let arr=[];
-    for(let i=0;i<data.length;i++){
-          arr.push(data[i].username);
-          // console.log(arr[i]);
+    let arr = [];
+    for (let i = 0; i < data.length; i++) {
+      arr.push(data[i].username);
+      // console.log(arr[i]);
     }
     res.send(JSON.stringify(arr));
-   })
-})
+  });
+});
 
 app.get("/temproute", async (req, res) => {
   const temp = await authMod.findOne({ username: "drakeswd" }).then((data) => {
@@ -145,45 +145,53 @@ app.post("/addUser", async (req, res) => {
     console.log(data);
   });
 
-  console.log(mongoData);
-  var paymentData = mongoData.usersData;
-  paymentData = JSON.parse(paymentData);
-  mongoData.users.push(newuser);
-  mongoData.usercount += 1;
-  var jsonData = initializer(
-    mongoData.users,
-    mongoData.usercount,
-    mongoData.usercount - 1
-  );
-  paymentData.toPay[newuser] = jsonData;
-  paymentData.toBePaid[newuser] = jsonData;
-  //Adding new user into everybody's directories
+  if (!mongoData) {
+    res.status(500);
+    res.send("Group does not exist");
+  } else {
+    console.log(mongoData);
+    var paymentData = mongoData.usersData;
+    paymentData = JSON.parse(paymentData);
+    mongoData.users.push(newuser);
+    mongoData.usercount += 1;
+    var jsonData = initializer(
+      mongoData.users,
+      mongoData.usercount,
+      mongoData.usercount - 1
+    );
+    paymentData.toPay[newuser] = jsonData;
+    paymentData.toBePaid[newuser] = jsonData;
+    //Adding new user into everybody's directories
 
-  Object.keys(paymentData.toPay).forEach(function (key) {
-    if (key == newuser) {
-      //Nothing
-    } else {
-      paymentData.toPay[key][newuser] = 0;
-    }
-  });
+    Object.keys(paymentData.toPay).forEach(function (key) {
+      if (key == newuser) {
+        //Nothing
+      } else {
+        paymentData.toPay[key][newuser] = 0;
+      }
+    });
 
-  Object.keys(paymentData.toBePaid).forEach(function (key) {
-    if (key == newuser) {
-      //Nothing
-    } else {
-      paymentData.toBePaid[key][newuser] = 0;
-    }
-  });
+    Object.keys(paymentData.toBePaid).forEach(function (key) {
+      if (key == newuser) {
+        //Nothing
+      } else {
+        paymentData.toBePaid[key][newuser] = 0;
+      }
+    });
 
-  //Add room into user directory
-  const temp = await authMod.updateOne(
-    { username: new user() },
-    { $push: { rooms: roomId } }
-  );
+    //Add room into user directory
+    const temp = await authMod.updateOne(
+      { username: newuser },
+      { $push: { rooms: roomId } }
+    );
 
-  mongoData["usersData"] = JSON.stringify(paymentData);
-  let updating = await roomMod.findOneAndUpdate({ roomId: roomId }, mongoData);
-  res.send("Success");
+    mongoData["usersData"] = JSON.stringify(paymentData);
+    let updating = await roomMod.findOneAndUpdate(
+      { roomId: roomId },
+      mongoData
+    );
+    res.send("Success");
+  }
 });
 
 app.post("/split", async (req, res) => {
