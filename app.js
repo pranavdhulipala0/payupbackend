@@ -237,7 +237,7 @@ app.post("/addUser", async (req, res) => {
     // console.log(users);
     users.push(newuser);
     const updObj = {
-      roomId:roomId,
+      roomId:parseInt(roomId),
       roomName: roomData.roomName,
       roomUsers: roomData.users
     }
