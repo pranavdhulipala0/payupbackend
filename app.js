@@ -108,9 +108,32 @@ app.post("/create", async (req, res) => {
     );
   }
 
-  // Update the user rooms
   res.send("Success");
 });
+
+//DELETE GROUP
+app.delete("/deleteRoom", async (req,res)=>{
+  try{
+    const rid = req.body.rId;
+  
+    //delete room in rooms collection
+    const rooms_col = mongoose.model("rooms", roomSchema);
+    console.log("roomId: "+rid);
+    const result = await rooms_col.deleteOne({roomId : rid})
+    res.send({ message: `${result.deletedCount} document(s) deleted.` })
+
+    //delete room in list of rooms of the user
+    const userMod = mongoose.model("auths", authSchema)
+    const data = await userMod.updateMany({},{$pull:{"rooms": {"roomId": rid}}});
+
+
+  }
+  catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'couldnt delete' });
+  }
+  
+})
 
 //GET USERS LIST
 app.get("/getUsers", async (req, res) => {
