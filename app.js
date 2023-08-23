@@ -136,6 +136,31 @@ app.get("/temproute", async (req, res) => {
   console.log(temp);
 });
 
+app.post("/getRoomDetails", async(req,res)=>{
+  const roomId = req.body.roomId;
+  var mongoData = {};
+  const temp = await roomMod.findOne({roomId:roomId}).then((data)=>{
+    mongoData = data;
+    console.log(mongoData);
+  })
+  res.send(JSON.stringify(mongoData));
+});
+
+async function getRoomDetails(roomId){
+  var mongoData = {};
+  const temp = await roomMod.findOne({roomId:roomId}).then((data)=>{
+    mongoData = data;
+    console.log(mongoData);
+  })
+  return mongoData;
+}
+
+app.get("/temp",async (req,res)=>{
+  const data = await getRoomDetails(1);
+  console.log(data);
+  res.send("Succ");
+})
+
 app.post("/addUser", async (req, res) => {
   var newuser = req.body.newuser;
   var roomId = req.body.roomId;
@@ -162,7 +187,8 @@ app.post("/addUser", async (req, res) => {
     paymentData.toPay[newuser] = jsonData;
     paymentData.toBePaid[newuser] = jsonData;
     //Adding new user into everybody's directories
-
+    
+    
     Object.keys(paymentData.toPay).forEach(function (key) {
       if (key == newuser) {
         //Nothing
@@ -179,10 +205,24 @@ app.post("/addUser", async (req, res) => {
       }
     });
 
+    const roomData = await getRoomDetails(roomId);
     //Add room into user directory
+    // roomData.roomUsers.push(newuser);
+    // console.log(roomData)
+    const users = roomData.users;
+    // console.log("My users are: ");
+    // console.log(users);
+    users.push(newuser);
+    const updObj = {
+      roomId:roomId,
+      roomName: roomData.roomName,
+      roomUsers: roomData.users
+    }
+    // console.log("Hi");
+    console.log(updObj);
     const temp = await authMod.updateOne(
       { username: newuser },
-      { $push: { rooms: roomId } }
+      { $push: { rooms: updObj } }
     );
 
     mongoData["usersData"] = JSON.stringify(paymentData);
