@@ -27,6 +27,7 @@ let roomSchema = new mongoose.Schema({
   users: [],
   usersData: { type: String, required: true },
   usercount: { type: Number, required: true },
+  roomHistory: []
 });
 
 let roomMod = new mongoose.model("rooms", roomSchema);
@@ -94,6 +95,7 @@ app.post("/create", async (req, res) => {
     users: usersArray,
     usersData: finalData,
     usercount: usercount,
+    roomHistory:[]
   });
 
   creation.save();
@@ -292,7 +294,7 @@ app.post("/split", async (req, res) => {
   console.log(paymentData);
   mongoData["usersData"] = JSON.stringify(paymentData);
   // console.log(mongoData);
-
+  mongoData.roomHistory.push("A split amount of " + splitAmount + " was initiated by " + username);
   let updating = await roomMod.findOneAndUpdate({ roomId: roomId }, mongoData);
   res.send("Success");
 });
@@ -302,6 +304,7 @@ app.post("/payup", async(req,res)=>{
   const receiver = req.body.receiver;
   const amount = req.body.amount;
   const roomId = req.body.roomId;
+  const description = req.body.description;
 
   var getData = await roomMod.findOne({ roomId: roomId }).then((data) => {
     mongoData = data;
@@ -313,11 +316,10 @@ app.post("/payup", async(req,res)=>{
   paymentData.toPay[sender][receiver]-=amount;
   paymentData.toBePaid[receiver][sender]-=amount;
   console.log(paymentData);
+  mongoData.roomHistory.push(sender + " paid an amount of " + amount + " to " + receiver + " for: " + description);
   mongoData["usersData"] = JSON.stringify(paymentData);
   let updating = await roomMod.findOneAndUpdate({ roomId: roomId }, mongoData);
   res.send("Success");
-
-
 });
 
 app.post("/login", async (req, res) => {
