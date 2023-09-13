@@ -297,6 +297,29 @@ app.post("/split", async (req, res) => {
   res.send("Success");
 });
 
+app.post("/payup", async(req,res)=>{
+  const sender = req.body.sender;
+  const receiver = req.body.receiver;
+  const amount = req.body.amount;
+  const roomId = req.body.roomId;
+
+  var getData = await roomMod.findOne({ roomId: roomId }).then((data) => {
+    mongoData = data;
+    // console.log(data);
+  });
+  var paymentData = mongoData.usersData;
+  paymentData = JSON.parse(paymentData);
+  console.log(paymentData);
+  paymentData.toPay[sender][receiver]-=amount;
+  paymentData.toBePaid[receiver][sender]-=amount;
+  console.log(paymentData);
+  mongoData["usersData"] = JSON.stringify(paymentData);
+  let updating = await roomMod.findOneAndUpdate({ roomId: roomId }, mongoData);
+  res.send("Success");
+
+
+});
+
 app.post("/login", async (req, res) => {
   var username = req.body.username;
   var password = req.body.password;
