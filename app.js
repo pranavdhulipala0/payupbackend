@@ -316,7 +316,7 @@ app.post("/payup", async(req,res)=>{
   paymentData.toPay[sender][receiver]-=amount;
   paymentData.toBePaid[receiver][sender]-=amount;
   console.log(paymentData);
-  mongoData.roomHistory.push(sender + " paid an amount of " + amount + " to " + receiver + " for: " + description);
+  // mongoData.roomHistory.push(sender + " paid an amount of " + amount + " to " + receiver + " for: " + description);
   mongoData["usersData"] = JSON.stringify(paymentData);
   let updating = await roomMod.findOneAndUpdate({ roomId: roomId }, mongoData);
   res.send("Success");
