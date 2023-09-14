@@ -295,7 +295,7 @@ app.post("/split", async (req, res) => {
   console.log(paymentData);
   mongoData["usersData"] = JSON.stringify(paymentData);
   // console.log(mongoData);
-  mongoData.roomHistory.push(description);
+  mongoData.roomHistory.push(username + " made a payment of " + amount + " for: " + description);
   let updating = await roomMod.findOneAndUpdate({ roomId: roomId }, mongoData);
   res.send("Success");
 });
