@@ -264,6 +264,7 @@ app.post("/split", async (req, res) => {
   var username = req.body.username;
   var roomId = req.body.roomId;
   var amount = req.body.amount;
+  var description = req.body.description
   var getData = await roomMod.findOne({ roomId: roomId }).then((data) => {
     mongoData = data;
     // console.log(data);
@@ -294,7 +295,7 @@ app.post("/split", async (req, res) => {
   console.log(paymentData);
   mongoData["usersData"] = JSON.stringify(paymentData);
   // console.log(mongoData);
-  mongoData.roomHistory.push("A split amount of " + splitAmount + " was initiated by " + username);
+  mongoData.roomHistory.push(description);
   let updating = await roomMod.findOneAndUpdate({ roomId: roomId }, mongoData);
   res.send("Success");
 });
