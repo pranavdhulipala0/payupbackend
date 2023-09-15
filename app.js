@@ -16,6 +16,7 @@ run();
 let authSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  email: {type: email, required: true},
   rooms: [],
 });
 
@@ -38,6 +39,7 @@ app.post("/register", (req, res) => {
   var registration = new authMod({
     username: req.body.username,
     password: req.body.password,
+    email: req.body.email,
     rooms: [],
   });
 
@@ -326,6 +328,7 @@ app.post("/payup", async(req,res)=>{
 app.post("/login", async (req, res) => {
   var username = req.body.username;
   var password = req.body.password;
+  var email = req.body.email;
 
   // console.log(username);
 
