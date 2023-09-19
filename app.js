@@ -18,6 +18,7 @@ let authSchema = new mongoose.Schema({
   password: { type: String, required: true },
   email: {type: email, required: true},
   rooms: [],
+  notifications:[]
 });
 
 let authMod = new mongoose.model("auths", authSchema);
@@ -41,6 +42,7 @@ app.post("/register", (req, res) => {
     password: req.body.password,
     email: req.body.email,
     rooms: [],
+    notifications:[]
   });
 
   registration.save();
@@ -322,6 +324,13 @@ app.post("/payup", async(req,res)=>{
   // mongoData.roomHistory.push(sender + " paid an amount of " + amount + " to " + receiver + " for: " + description);
   mongoData["usersData"] = JSON.stringify(paymentData);
   let updating = await roomMod.findOneAndUpdate({ roomId: roomId }, mongoData);
+  const notificationString = sender + " paid you an amount of: " + amount + " for: " + description;
+  const temp = await authMod.updateOne(
+    { username: newuser },
+    { $push: { notifications: notificationString } }
+  );
+
+
   res.send("Success");
 });
 
