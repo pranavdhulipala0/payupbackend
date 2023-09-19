@@ -361,6 +361,17 @@ app.post("/fetchRooms", async (req, res) => {
   res.send(JSON.stringify(myRooms));
 });
 
+app.post("/fetchNotifs", async (req, res) => {
+  const username = req.body.username;
+  var notifications = [];
+  const data = await authMod.findOne({ username: username }).then((temp) => {
+    notifications = temp.notifications;
+  });
+
+  console.log("Request made for: " + username);
+  res.send(JSON.stringify(notifications));
+});
+
 app.listen(3002, () => {
   console.log("Listening at 3002");
 });
