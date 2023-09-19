@@ -16,9 +16,10 @@ run();
 let authSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  email: {type: email, required: true},
+  email: {type: String, required: true},
+  notifications:[],
   rooms: [],
-  notifications:[]
+  friends:[]
 });
 
 let authMod = new mongoose.model("auths", authSchema);
