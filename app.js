@@ -326,7 +326,7 @@ app.post("/payup", async(req,res)=>{
   let updating = await roomMod.findOneAndUpdate({ roomId: roomId }, mongoData);
   const notificationString = sender + " paid you an amount of: " + amount + " for: " + description;
   const temp = await authMod.updateOne(
-    { username: newuser },
+    { username: receiver },
     { $push: { notifications: notificationString } }
   );
 
