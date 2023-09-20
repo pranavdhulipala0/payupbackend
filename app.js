@@ -325,15 +325,30 @@ app.post("/payup", async(req,res)=>{
   mongoData.roomHistory.push(sender + " paid an amount of " + amount + " to " + receiver + " for: " + description);
   mongoData["usersData"] = JSON.stringify(paymentData);
   let updating = await roomMod.findOneAndUpdate({ roomId: roomId }, mongoData);
-  const notificationString = sender + " paid you an amount of: " + amount + " for: " + description;
+  let userDetails = await authMod.findOne({username:receiver});
+  const notifString = sender + " paid an amount of " + amount + " to you for: " + description;
+  const notificationObj = {"id":userDetails.notifications.length+1,"roomId": roomId, "description": notifString, "sender": sender, "amount": amount, status:false};
   const temp = await authMod.updateOne(
     { username: receiver },
-    { $push: { notifications: notificationString } }
+    { $push: { notifications: notificationObj } }
   );
 
 
   res.send("Success");
 });
+
+app.post("/ack", async(req,res)=>{
+  const username = req.body.username;
+  const id = req.body.id;
+
+  let userDetails = await authMod.findOne({username:username});
+  userDetails.notifications[id].status = true;
+  const temp = await authMod.updateOne(
+    { username: username }, userDetails
+  );
+
+  res.send("Success");
+})
 
 app.post("/login", async (req, res) => {
   var username = req.body.username;
