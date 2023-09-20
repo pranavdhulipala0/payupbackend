@@ -342,7 +342,8 @@ app.post("/ack", async(req,res)=>{
   const id = req.body.id;
 
   let userDetails = await authMod.findOne({username:username});
-  userDetails.notifications[id].status = true;
+  userDetails.notifications[id-1].status = true;
+  //console.log(userDetails);
   const temp = await authMod.updateOne(
     { username: username }, userDetails
   );
