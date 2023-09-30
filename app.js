@@ -38,16 +38,27 @@ let roomMod = new mongoose.model("rooms", roomSchema);
 app.use(express.json());
 
 app.post("/register", (req, res) => {
-  var registration = new authMod({
-    username: req.body.username,
-    password: req.body.password,
-    email: req.body.email,
-    rooms: [],
-    notifications:[]
-  });
+  username = req.body.username;
+  password = req.body.password
 
-  registration.save();
-  res.send("User registered!");
+  authMod.findOne({ username }).then((data) => {
+    if (data) {
+      res.status(202);
+      res.send("User already exists!");
+    } 
+    else {
+      var registration = new authMod({
+        username: req.body.username,
+        password: req.body.password,
+        email: req.body.email,
+        rooms: [],
+        notifications:[]
+      });
+    
+      registration.save();
+      res.send("User registered!");
+    }
+  });
 });
 
 function initializer(usersArray, usercount, i) {
@@ -386,6 +397,7 @@ app.post("/fetchRooms", async (req, res) => {
   console.log("Request made for: " + username);
   res.send(JSON.stringify(myRooms));
 });
+
 
 app.post("/fetchNotifs", async (req, res) => {
   const username = req.body.username;
